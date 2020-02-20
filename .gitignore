@@ -141,3 +141,4 @@ dmypy.json
 data
 logs
 kspider/__pycache__
+kspider/spiders/__pycache__
