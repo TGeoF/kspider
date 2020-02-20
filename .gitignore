@@ -138,5 +138,6 @@ dmypy.json
 .vscode
 
 # project specific
+data
 logs
 kspider/__pycache__
