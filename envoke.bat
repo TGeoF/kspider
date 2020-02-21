@@ -1,1 +1,0 @@
-scrapy crawl -a league=1-bundesliga -a start=1 -a recursive=true -a season=2018-19 -o data/data.csv MatchSpider
