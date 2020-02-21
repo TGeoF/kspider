@@ -134,11 +134,7 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
-# VS Code
-.vscode
-
-# project specific
+#project specific
 data
 logs
-kspider/__pycache__
-kspider/spiders/__pycache__
+.vscode
