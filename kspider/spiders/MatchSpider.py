@@ -4,7 +4,7 @@ from kspider.items import Match
 
 
 class MatchSpider(scrapy.Spider):
-    name = "MatchSpider"
+    name = "matches"
 
     def start_requests(self):
         yield scrapy.Request('https://www.kicker.de/{}/spieltag/{}/{}'.format(self.league, self.season, self.start))
