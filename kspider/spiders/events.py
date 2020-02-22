@@ -1,12 +1,12 @@
 import scrapy
 
-from kspider.items import Event
+from kspider.items import EventItem
 
 
 class EventSpider(scrapy.Spider):
     name = "EventSpider"
 
-    def start_requests(self): 
+    def start_requests(self):
         yield scrapy.Request('https://www.kicker.de/{}/spieltag/{}/{}'.format(self.league, self.season, self.start))
 
     def parse(self, response):
@@ -33,7 +33,7 @@ class EventSpider(scrapy.Spider):
         goals = response.css('.::text').getall()
         for g in goals:
             g.strip()
-        e = Event()
+        e = EventItem()
         e['eventType'] = goals
         e['matchID'] = response.url.split('/')[-3]
 

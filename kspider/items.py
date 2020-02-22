@@ -7,11 +7,12 @@
 
 import scrapy
 
-class Event(scrapy.Item):
-    matchID = scrapy.Field()
-    eventType = scrapy.Field()
 
-class Match(scrapy.Item):
+class EventItem(scrapy.Item):
+    l = scrapy.Field()
+
+
+class MatchItem(scrapy.Item):
     league = scrapy.Field()
     season = scrapy.Field()
     matchday = scrapy.Field()
@@ -24,4 +25,3 @@ class Match(scrapy.Item):
     stadium = scrapy.Field()
     attendance = scrapy.Field()
     referee = scrapy.Field()
-    timeline = scrapy.Field()

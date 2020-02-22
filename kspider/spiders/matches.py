@@ -1,6 +1,7 @@
 import scrapy
+import re
 from datetime import datetime
-from kspider.items import Match
+from kspider.items import MatchItem, EventItem
 
 
 class MatchSpider(scrapy.Spider):
@@ -30,7 +31,7 @@ class MatchSpider(scrapy.Spider):
                 return ""
             return datapoint
 
-        m = Match()
+        m = MatchItem()
 
         stadion = response.css('.kick__gameinfo__item--game-preview '
                                ':nth-child(3) p::text').getall()
@@ -63,6 +64,15 @@ class MatchSpider(scrapy.Spider):
         for t in range(len(tl)):
             tl[t] = tl[t].strip()
         tl = list(filter(None, tl))
-        m['timeline'] = tl
+        tl = tl[:-2]
+        e = EventItem()
+        tmp = []
+        while len(tl) > 0:
+            line = tl.pop(0)
+            if (re.match('^\d{2}:\d{2}', line)) and (len(tmp) != 0):
+                e['l'] = tmp
+                yield e
+                tmp = []
+            tmp.append(line)
 
         yield m
