@@ -135,6 +135,6 @@ dmypy.json
 .pytype/
 
 #project specific
-data
-logs
+data/
+logs/
 .vscode
