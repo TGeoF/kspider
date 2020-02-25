@@ -6,6 +6,7 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 from kspider.items import MatchItem, EventItem
+import re
 import pymongo
 
 
@@ -16,11 +17,63 @@ class CleanupPipeline(object):
         if isinstance(item, EventItem):
             return self.cleanupEvent(item, spider)
 
-    def cleanupEvent(self, event, spider):
-        return event
+    def cleanupEvent(self, item, spider):
+        tl = item['eventType']
+        print(tl)
 
-    def cleanupMatch(self, match, spider):
-        return match
+        item['team'] = tl[-1]
+        item['minute'] = int(re.search('\d{1,2}(?=(\. ))', tl[0]).group())
+
+        try:
+            item['extraMinute'] = int(re.search(
+                '\d{1,2}(?= Spielminute)', tl[0]).group())
+        except:
+            item['extraMinute'] = 0
+
+        if re.search(' Karte ', tl[1]):  # Karten
+            item['eventType'] = 'card'
+            item['player1'] = tl[2]
+            item['player2'] = ''
+            item['penalty'] = False
+            item['ownGoal'] = False
+            if re.search('Gelb', tl[1]):
+                item['cardColor'] = 'yellow'
+            else:
+                item['cardColor'] = 'red'
+        elif re.search('Spielerwechsel ', tl[1]):  # Auswechslungen
+            item['eventType'] = 'substitution'
+            item['cardColor'] = ''
+            item['player1'] = tl[2]
+            item['player2'] = tl[4]
+            item['penalty'] = False
+            item['ownGoal'] = False
+        elif re.search('Tor \d', tl[1]):  # Tore
+            item['eventType'] = 'goal'
+            item['cardColor'] = ''
+            item['player1'] = tl[2]
+            if tl[-3] == 'Vorbereitung':
+                item['player2'] = tl[-2]
+            else:
+                item['player2'] = ''
+            if re.search('lfmeter', tl[3]):
+                item['penalty'] = True
+            else:
+                item['penalty'] = False
+            if re.match('Eigentor', tl[3]):
+                item['ownGoal'] = True
+            else:
+                item['ownGoal'] = False
+        else:
+            item['eventType'] = 'invalid'
+            item['cardColor'] = ''
+
+        return item
+
+    def cleanupMatch(self, item, spider):
+        clean_matchday = re.search(
+            '\d{1,2}(?=(\. Spieltag))', item['matchday']).group()
+        item['matchday'] = clean_matchday
+        return item
 
 
 class MongoDBPipeline(object):

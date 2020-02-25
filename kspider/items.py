@@ -9,7 +9,16 @@ import scrapy
 
 
 class EventItem(scrapy.Item):
-    l = scrapy.Field()
+    eventType = scrapy.Field()
+    minute = scrapy.Field()
+    extraMinute = scrapy.Field()
+    ownGoal = scrapy.Field()
+    penalty = scrapy.Field()
+    cardColor = scrapy.Field()
+    player1 = scrapy.Field()
+    player2 = scrapy.Field()
+    matchID = scrapy.Field()
+    team = scrapy.Field()
 
 
 class MatchItem(scrapy.Item):

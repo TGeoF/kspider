@@ -22,7 +22,7 @@ NEWSPIDER_MODULE = 'kspider.spiders'
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 8
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -66,7 +66,7 @@ CONCURRENT_REQUESTS = 32
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'kspider.pipelines.CleanupPipeline': 300,
-    'kspider.pipelines.MongoDBPipeline': 800
+    # 'kspider.pipelines.MongoDBPipeline': 800
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -90,5 +90,5 @@ ITEM_PIPELINES = {
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
-FEED_URI = 'file:///D:/feed.csv'
-FEED_FORMAT = 'csv'
+# FEED_URI = 'file:///D:/feed.csv'
+# FEED_FORMAT = 'csv'

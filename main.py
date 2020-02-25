@@ -4,8 +4,8 @@ from helpers import multiyearSeasonString
 
 season = multiyearSeasonString(2019)
 league = '1-bundesliga'
-start = 1
-recursive = True
+start = 23
+recursive = False
 
 process = CrawlerProcess(get_project_settings())
 process.crawl('events', season=season,

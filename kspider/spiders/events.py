@@ -24,21 +24,21 @@ class EventSpider(scrapy.Spider):
                 yield response.follow(a, callback=self.parse)
 
     def parseSchema(self, response):
+        pass
+        # def extract_with_css(query):
+        #     datapoint = response.css(query).get(default='').strip()
+        #     if datapoint == "-":
+        #         return ""
+        #     return datapoint
 
-        def extract_with_css(query):
-            datapoint = response.css(query).get(default='').strip()
-            if datapoint == "-":
-                return ""
-            return datapoint
+        # goals = response.css('.::text').getall()
+        # for g in goals:
+        #     g.strip()
+        # e = EventItem()
+        # e['eventType'] = goals
+        # e['matchID'] = response.url.split('/')[-3]
 
-        goals = response.css('.::text').getall()
-        for g in goals:
-            g.strip()
-        e = EventItem()
-        e['eventType'] = goals
-        e['matchID'] = response.url.split('/')[-3]
-
-        yield e
+        # yield e
 
     def parseSpielinfo(self, response):
 
@@ -48,11 +48,12 @@ class EventSpider(scrapy.Spider):
         tl = list(filter(None, tl))
         tl = tl[:-2]
         e = EventItem()
+        e['matchID'] = int(response.url.split('/')[-3])
         tmp = []
         while len(tl) > 0:
             line = tl.pop(0)
             if (re.match('^\d{2}:\d{2}', line)) and (len(tmp) != 0):
-                e['l'] = tmp
+                e['eventType'] = tmp
                 yield e
                 tmp = []
             tmp.append(line)
