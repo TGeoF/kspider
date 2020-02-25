@@ -25,20 +25,18 @@ class CleanupPipeline(object):
 
 class MongoDBPipeline(object):
 
-    def __init__(self):
-        user = input("MongoAtlas usr:\n")
-        passwd = input("MongoAtlas pw:\n")
-        self.mongo_uri = 'mongodb+srv://{}}:{}@cluster0-v5e6v.mongodb.net/test?retryWrites=true&w=majority'.format(
-            user, passwd)
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        return cls(
-            mongo_uri=crawler.settings.get('MONGO_URI'),
-            mongo_db=crawler.settings.get('MONGO_DATABASE', 'items')
-        )
+    # @classmethod
+    # def from_crawler(cls, crawler):
+    #     return cls(
+    #         mongo_uri=crawler.settings.get('MONGO_URI'),
+    #         mongo_db=crawler.settings.get('MONGO_DATABASE', 'items')
+    #     )
 
     def open_spider(self, spider):
+        user = input("MongoAtlas usr:\n")
+        passwd = input("MongoAtlas pw:\n")
+        self.mongo_uri = 'mongodb+srv://{}:{}@cluster0-v5e6v.mongodb.net/test?retryWrites=true&w=majority'.format(
+            user, passwd)
         self.client = pymongo.MongoClient(self.mongo_uri)
         self.db = self.client[spider.league]
 
