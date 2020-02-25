@@ -5,7 +5,18 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
+from kspider.items import MatchItem, EventItem
 
-class TutorialPipeline(object):
+
+class CleanupPipeline(object):
     def process_item(self, item, spider):
-        return item
+        if isinstance(item, MatchItem):
+            return self.cleanupMatch(item, spider)
+        if isinstance(item, EventItem):
+            return self.cleanupEvent(item, spider)
+
+    def cleanupEvent(self, event, spider):
+        return event
+
+    def cleanupMatch(self, match, spider):
+        return match
