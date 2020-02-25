@@ -8,6 +8,6 @@ start = 1
 recursive = True
 
 process = CrawlerProcess(get_project_settings())
-process.crawl('matches', season=season,
+process.crawl('events', season=season,
               league=league, start=start, recursive=recursive)
 process.start()

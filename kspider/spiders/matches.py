@@ -1,7 +1,6 @@
 import scrapy
-import re
 from datetime import datetime
-from kspider.items import MatchItem, EventItem
+from kspider.items import MatchItem
 
 
 class MatchSpider(scrapy.Spider):
@@ -59,20 +58,5 @@ class MatchSpider(scrapy.Spider):
         m['referee'] = extract_with_css('.kick__gameinfo__person a::text')
         m['attendance'] = extract_with_css(
             '.kick__gameinfo__item--game-preview .kick__tabular-nums p::text')
-
-        tl = response.css('.kick__game-timeline *::text').getall()
-        for t in range(len(tl)):
-            tl[t] = tl[t].strip()
-        tl = list(filter(None, tl))
-        tl = tl[:-2]
-        e = EventItem()
-        tmp = []
-        while len(tl) > 0:
-            line = tl.pop(0)
-            if (re.match('^\d{2}:\d{2}', line)) and (len(tmp) != 0):
-                e['l'] = tmp
-                yield e
-                tmp = []
-            tmp.append(line)
 
         yield m

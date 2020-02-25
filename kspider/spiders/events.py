@@ -1,10 +1,10 @@
 import scrapy
-
+import re
 from kspider.items import EventItem
 
 
 class EventSpider(scrapy.Spider):
-    name = "EventSpider"
+    name = "events"
 
     def start_requests(self):
         yield scrapy.Request('https://www.kicker.de/{}/spieltag/{}/{}'.format(self.league, self.season, self.start))
@@ -16,7 +16,8 @@ class EventSpider(scrapy.Spider):
                 '.kick__v100-gameList__gameRow__stateCell a::attr(href)').get()
             if matchURL is not None:
                 kickID = matchURL.split('/')[1]
-                yield response.follow('/{}/schema/'.format(kickID), callback=self.parseSchema)
+                # yield response.follow('/{}/schema/'.format(kickID), callback=self.parseSchema)
+                yield response.follow('/{}/spielinfo/'.format(kickID), callback=self.parseSpielinfo)
 
         if self.recursive:
             for a in response.css('.kick__pagination__cell-go-forward a'):
@@ -38,3 +39,20 @@ class EventSpider(scrapy.Spider):
         e['matchID'] = response.url.split('/')[-3]
 
         yield e
+
+    def parseSpielinfo(self, response):
+
+        tl = response.css('.kick__game-timeline *::text').getall()
+        for t in range(len(tl)):
+            tl[t] = tl[t].strip()
+        tl = list(filter(None, tl))
+        tl = tl[:-2]
+        e = EventItem()
+        tmp = []
+        while len(tl) > 0:
+            line = tl.pop(0)
+            if (re.match('^\d{2}:\d{2}', line)) and (len(tmp) != 0):
+                e['l'] = tmp
+                yield e
+                tmp = []
+            tmp.append(line)
