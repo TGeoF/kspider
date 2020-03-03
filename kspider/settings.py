@@ -66,6 +66,7 @@ CONCURRENT_REQUESTS = 8
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'kspider.pipelines.CleanupPipeline': 300,
+    'kspider.pipelines.StrapiPipeline': 700,
     # 'kspider.pipelines.MongoDBPipeline': 800
 }
 

@@ -42,7 +42,13 @@ class MatchSpider(scrapy.Spider):
 
         datestring = extract_with_css('.kick__gameinfo__item--game-preview '
                                       ':nth-child(2) p::text')
-        date = datetime.strptime(datestring, '%d.%m.%Y, %H:%M')
+        try:
+            date = datetime.strptime(datestring, '%d.%m.%Y, %H:%M')
+        except:
+            try:
+                date = datetime.strptime(datestring, '%d.%m.%Y')
+            except:
+                date = None
         m['datetime'] = date
         m['league'] = self.league
         m['season'] = self.season

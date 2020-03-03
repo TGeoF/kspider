@@ -6,8 +6,31 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 from kspider.items import MatchItem, EventItem
+from api_keys import strapi_server
 import re
-import pymongo
+#import pymongo
+import requests
+
+
+class StrapiPipeline(object):
+    def process_item(self, item, spider):
+        if isinstance(item, MatchItem):
+            print("FOUND A MATCH")
+            API_ENDPOINT = strapi_server + "/matches"
+            print(API_ENDPOINT)
+            data = {"matchday": item["matchday"],
+                    "matchID": item["matchID"],
+                    "datetime": item["datetime"],
+                    "homeTeam": item["homeTeam"],
+                    "awayTeam": item["awayTeam"],
+                    "homeGoals": item["homeGoals"],
+                    "awayGoals": item["awayGoals"],
+                    "stadium": item["stadium"],
+                    "attendance": item["attendance"],
+                    "referee": item["referee"]}
+            response = requests.post(url=API_ENDPOINT, data=data)
+            print(response)
+        return item
 
 
 class CleanupPipeline(object):
@@ -70,37 +93,46 @@ class CleanupPipeline(object):
         return item
 
     def cleanupMatch(self, item, spider):
+
         clean_matchday = re.search(
             '\d{1,2}(?=(\. Spieltag))', item['matchday']).group()
-        item['matchday'] = clean_matchday
+        item['matchday'] = int(clean_matchday)
+
+        clean_attendance = ''.join(
+            c for c in item['attendance'] if c.isdigit())
+        try:
+            item['attendance'] = int(clean_attendance)
+        except:
+            item['attendance'] = 0
+
         return item
 
 
-class MongoDBPipeline(object):
+# class MongoDBPipeline(object):
 
-    # @classmethod
-    # def from_crawler(cls, crawler):
-    #     return cls(
-    #         mongo_uri=crawler.settings.get('MONGO_URI'),
-    #         mongo_db=crawler.settings.get('MONGO_DATABASE', 'items')
-    #     )
+#     # @classmethod
+#     # def from_crawler(cls, crawler):
+#     #     return cls(
+#     #         mongo_uri=crawler.settings.get('MONGO_URI'),
+#     #         mongo_db=crawler.settings.get('MONGO_DATABASE', 'items')
+#     #     )
 
-    def open_spider(self, spider):
-        user = input("MongoAtlas usr:\n")
-        passwd = input("MongoAtlas pw:\n")
-        self.mongo_uri = 'mongodb+srv://{}:{}@cluster0-v5e6v.mongodb.net/test?retryWrites=true&w=majority'.format(
-            user, passwd)
-        self.client = pymongo.MongoClient(self.mongo_uri)
-        self.db = self.client[spider.league]
+#     def open_spider(self, spider):
+#         user = input("MongoAtlas usr:\n")
+#         passwd = input("MongoAtlas pw:\n")
+#         self.mongo_uri = 'mongodb+srv://{}:{}@cluster0-v5e6v.mongodb.net/test?retryWrites=true&w=majority'.format(
+#             user, passwd)
+#         self.client = pymongo.MongoClient(self.mongo_uri)
+#         self.db = self.client[spider.league]
 
-    def close_spider(self, spider):
-        self.client.close()
+#     def close_spider(self, spider):
+#         self.client.close()
 
-    def process_item(self, item, spider):
-        if isinstance(item, MatchItem):
-            collection_name = 'matches'
-        if isinstance(item, EventItem):
-            collection_name = 'events'
+#     def process_item(self, item, spider):
+#         if isinstance(item, MatchItem):
+#             collection_name = 'matches'
+#         if isinstance(item, EventItem):
+#             collection_name = 'events'
 
-        self.db[collection_name].insert_one(dict(item))
-        return item
+#         self.db[collection_name].insert_one(dict(item))
+#         return item
